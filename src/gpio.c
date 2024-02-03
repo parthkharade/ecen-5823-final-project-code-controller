@@ -14,7 +14,7 @@
 
  *
  * Student edit: Add your name and email address here:
- * @student    Awesome Student, Awesome.Student@Colorado.edu
+ * @student    Parth Kharade, Parth.Kharade@Colorado.edu
  *
  
  */
