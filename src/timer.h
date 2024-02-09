@@ -24,10 +24,20 @@
 #ifndef SRC_TIMER_H_
 #define SRC_TIMER_H_
 
+
+
+#include "stdint.h"
 /*
  * Function to intialize LETimer0 with a period of 2.25ms.
  * Enables COMP1 and UF interrupt.
  * */
-void lettimer0Init();
 
+// Uncomment this line to enable the unit-test function for waitTimerUs
+//#define UNIT_TEST_TIMER
+void lettimer0Init();
+void timerWaitUs(uint32_t delay);
+
+#ifdef UNIT_TEST_TIMER
+void testTimerWaitUs();
+#endif
 #endif /* SRC_TIMER_H_ */

@@ -61,7 +61,8 @@
 #include "src/lcd.h"
 #include "src/timer.h"
 #include "src/oscillator.h"
-
+#include "src/scheduler.h"
+#include "src/i2c.h"
 // Students: Here is an example of how to correctly include logging functions in
 //           each .c file.
 //           Apply this technique to your other .c files.
@@ -163,12 +164,12 @@ SL_WEAK void app_init(void)
   gpioInit();
   oscInit();
   lettimer0Init();
+  I2C0init();
 
   //Set the lowest energy mode according the the #define in app,c
   sl_power_manager_add_em_requirement(LOWEST_ENERGY_MODE);
   // Enable timer interrupts at the NVIC
   NVIC_EnableIRQ(LETIMER0_IRQn);
-  __enable_irq();
 } // app_init()
 
 
@@ -182,6 +183,27 @@ SL_WEAK void app_process_action(void)
   // Notice: This function is not passed or has access to Bluetooth stack events.
   //         We will create/use a scheme that is far more energy efficient in
   //         later assignments.
+#ifdef UNIT_TEST_TIMER
+  testTimerWaitUs();
+#else
+  event_t nextEvent;
+  nextEvent = schedulerGetNextEvent ();
+  while (nextEvent != noEventPending)
+    {
+      switch (nextEvent)
+        {
+        case noEventPending:
+          break;
+        case eventLETUnderFlow:
+          si7021_getData ();
+          break;
+        default:
+          LOG_ERROR("Invalid Event Code from Scheduler %d", nextEvent);
+          break;
+        }
+      nextEvent = schedulerGetNextEvent ();
+    }
+#endif
 } // app_process_action()
 
 

@@ -51,45 +51,41 @@
 void gpioInit()
 {
     // Student Edit:
+   // Set sensor enable pin as a push pull output and low at start.
+    GPIO_PinModeSet(gpioPortD, 15, gpioModePushPull, 0);
 
-    // Set the port's drive strength. In this MCU implementation, all GPIO cells
-    // in a "Port" share the same drive strength setting. 
-//	GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong); // Strong, 10mA
-	GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthWeakAlternateWeak); // Weak, 1mA
-	
-	// Set the 2 GPIOs mode of operation
-	GPIO_PinModeSet(LED_port, LED0_pin, gpioModePushPull, false);
-	GPIO_PinModeSet(LED_port, LED1_pin, gpioModePushPull, false);
-
-
+#ifdef UNIT_TEST_TIMER
+    GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthWeakAlternateWeak); // Weak, 1mA
+    // Set the 2 GPIOs mode of operation
+    GPIO_PinModeSet(LED_port, LED0_pin, gpioModePushPull, false);
+#endif
 } // gpioInit()
 
 
+#ifdef UNIT_TEST_TIMER
 void gpioLed0SetOn()
 {
-	GPIO_PinOutSet(LED_port, LED0_pin);
+  GPIO_PinOutSet(LED_port, LED0_pin);
 }
 
 
 void gpioLed0SetOff()
 {
-	GPIO_PinOutClear(LED_port, LED0_pin);
+  GPIO_PinOutClear(LED_port, LED0_pin);
 }
 
 
 void gpioLed1SetOn()
 {
-	GPIO_PinOutSet(LED_port, LED1_pin);
+  GPIO_PinOutSet(LED_port, LED1_pin);
 }
 
 
 void gpioLed1SetOff()
 {
-	GPIO_PinOutClear(LED_port, LED1_pin);
+  GPIO_PinOutClear(LED_port, LED1_pin);
 }
-
-
-
+#endif
 
 
 

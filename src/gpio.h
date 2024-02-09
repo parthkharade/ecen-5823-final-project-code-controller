@@ -30,17 +30,17 @@
 #define SRC_GPIO_H_
 
 
-
+#include "timer.h" // To find the definition for UNIT_TEST_TIMER
 
 // Function prototypes
 void gpioInit();
+
+#ifdef UNIT_TEST_TIMER
 void gpioLed0SetOn();
 void gpioLed0SetOff();
 void gpioLed1SetOn();
 void gpioLed1SetOff();
-
-
-
+#endif
 
 
 #endif /* SRC_GPIO_H_ */

@@ -19,16 +19,13 @@
 #include "em_letimer.h"
 #include "gpio.h"
 #include "em_core.h"
+#include "scheduler.h"
 void LETIMER0_IRQHandler(){
   uint32_t irqStatusFlag = LETIMER_IntGet(LETIMER0);
 
   //Clear Pending Interrupts.
   LETIMER_IntClear(LETIMER0, 0xFFFFFFFF);
   NVIC_ClearPendingIRQ(LETIMER0_IRQn);
-  if(irqStatusFlag & LETIMER_IF_UF){
-      gpioLed0SetOff();
-  }
-  if(irqStatusFlag & LETIMER_IF_COMP1){
-      gpioLed0SetOn();
-  }
+  if(irqStatusFlag&LETIMER_IF_UF)
+    schedulerSetEventLETUF();
 }
