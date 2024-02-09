@@ -37,12 +37,23 @@ uint32_t schedulerGetNextEvent(){
 
   CORE_DECLARE_IRQ_STATE;
 
+/**
+ * @brief 
+ * Make a copy of the pending events variable so that it doesn't change when deciding the next peding event.
+ * 
+ */
   CORE_ENTER_CRITICAL();
   currentPendingEvents = schedulerPedningEvents;
   CORE_EXIT_CRITICAL();
 
   if(currentPendingEvents&eventLETUnderFlow) event=eventLETUnderFlow;
 
+  /**
+   * @brief Construct a new core enter critical object
+   * This approach works well if the number of events are small. I can conditionally check for the event mask in the order of their priority and return once a pendinnd event is found.
+   * For larger number of events a for loop to extract the bits of the pending event variable would be a better approach.
+   * 
+   */
   CORE_ENTER_CRITICAL();
   schedulerPedningEvents &= ~event;
   CORE_EXIT_CRITICAL();
