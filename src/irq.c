@@ -24,8 +24,10 @@ void LETIMER0_IRQHandler(){
   uint32_t irqStatusFlag = LETIMER_IntGet(LETIMER0);
 
   //Clear Pending Interrupts.
-  LETIMER_IntClear(LETIMER0, LETIMER_IEN_UF);
+  LETIMER_IntClear(LETIMER0, irqStatusFlag);
   NVIC_ClearPendingIRQ(LETIMER0_IRQn);
-  if(irqStatusFlag&LETIMER_IF_UF)
-    schedulerSetEventLETUF();
+  if(irqStatusFlag&LETIMER_IF_UF){
+      schedulerSetEventLETUF();
+  }
+
 }
