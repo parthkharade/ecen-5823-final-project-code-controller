@@ -71,7 +71,7 @@ void lettimer0Init(){
 
 void timerWaitUs(uint32_t delay){
   if(delay > MAX_DELAY_US){
-    LOG_ERROR("Delay of %lu uS more than maximum permissible delay of %lu uS\r\n",delay,MAX_DELAY_US);
+    LOG_ERROR("Delay of %lu uS more than maximum permissible delay of %lu uS\r\n",delay,MAX_DELAY_US); // This is the upper bound. The lower bound is handled below
   }
   else{
 

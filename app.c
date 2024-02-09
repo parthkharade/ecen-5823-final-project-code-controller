@@ -187,7 +187,7 @@ SL_WEAK void app_process_action(void)
   testTimerWaitUs();
 #else
   event_t nextEvent;
-  nextEvent = schedulerGetNextEvent ();
+  nextEvent = schedulerGetNextEvent (); // Get the next event from the scheduler.
   while (nextEvent != noEventPending)
     {
       switch (nextEvent)
@@ -195,7 +195,7 @@ SL_WEAK void app_process_action(void)
         case noEventPending:
           break;
         case eventLETUnderFlow:
-          si7021_getData ();
+          si7021_getData (); // Read data on LETIMER underflow.
           break;
         default:
           LOG_ERROR("Invalid Event Code from Scheduler %d", nextEvent);

@@ -1,8 +1,23 @@
 /*
- * i2c.c
+ * i2c.h
  *
  *  Created on: Feb 5, 2024
- *      Author: Parth
+ *      Author: Parth Kharade, Parth.Kharade@Colorado.edu
+ *
+ *  @institution University of Colorado Boulder (UCB)
+ *  @course ECEN 5823-001: IoT Embedded Firmware (Spring 2024)
+*   @instructor David Sluiter
+*
+*   @assignment ecen5823-assignment3-ParthKharade
+*   @due Feb 8, 2024
+*
+*   @resources Utilized Silicon Labs' EMLIB peripheral libraries to
+*   implement functionality.
+* -  si_i2cspm.h used for oscillator initialiszaion
+*
+*   @copyright All rights reserved. Distribution allowed only for the
+*   use of assignment grading. Use of code excerpts allowed at the
+*   discretion of author. Contact for permission.
  */
 #define INCLUDE_LOG_DEBUG 1
 #include "i2c.h"
@@ -69,19 +84,19 @@ void si7021_sendTempCmd(){
   }
 }
 
-void si7021_turnON(){
-  GPIO_PinOutSet(gpioPortD, 15);
-  timerWaitUs((80)*(1000U));
+void si7021_power(bool on){
+  if(on){
+      GPIO_PinOutSet(gpioPortD, 15);
+      timerWaitUs((80)*(1000U)); // Wait for the SI7021 to power on.
+  }
+  else{
+      GPIO_PinOutClear(gpioPortD, 15); // Turn off power to SI7021
+  }
 }
-
-void si7021_turnOFF(){
-  GPIO_PinOutClear(gpioPortD, 15);
-}
-
 void si7021_getData(){
-  si7021_turnON();
+  si7021_power(true);
   si7021_sendTempCmd();
-  timerWaitUs((20)*(1000U));
+  timerWaitUs((11)*(1000U));
   si7021_readTempData();
-  si7021_turnOFF();
+  si7021_power(false);
 }
