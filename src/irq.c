@@ -20,14 +20,30 @@
 #include "gpio.h"
 #include "em_core.h"
 #include "scheduler.h"
+#include "em_i2c.h"
 void LETIMER0_IRQHandler(){
   uint32_t irqStatusFlag = LETIMER_IntGet(LETIMER0);
 
   //Clear Pending Interrupts.
   LETIMER_IntClear(LETIMER0, irqStatusFlag);
   NVIC_ClearPendingIRQ(LETIMER0_IRQn);
+
   if(irqStatusFlag&LETIMER_IF_UF){
       schedulerSetEventLETUF();
   }
+  if(irqStatusFlag&LETIMER_IF_COMP1){
+      LETIMER_IntDisable(LETIMER0, LETIMER_IEN_COMP1);
+      schedulerSetEventLETComp1();
+  }
 
+}
+void I2C0_IRQHandler(){
+  I2C_TransferReturn_TypeDef transferStatus;
+  transferStatus = I2C_Transfer(I2C0);
+  if(transferStatus == i2cTransferDone){
+      schedulerSetEventI2CTRXSuccess();
+  }
+  else if(transferStatus != i2cTransferInProgress){
+      schedulerSetEventI2CTRXError();
+  }
 }

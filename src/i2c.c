@@ -24,6 +24,7 @@
 #include "sl_i2cspm.h"
 #include "src/log.h"
 #include "src/timer.h"
+#include "em_i2c.h"
 I2C_TransferReturn_TypeDef i2cStatus;
 I2C_TransferSeq_TypeDef i2cSeq;
 uint8_t cmd;
@@ -50,7 +51,9 @@ void I2C0init(){
   i2cInit.portLocationScl = 14;
   i2cInit.portLocationSda = 16;
 
+
   I2CSPM_Init(&i2cInit); // Initialise the i2c module using the parameters specified above
+  NVIC_EnableIRQ(I2C0_IRQn);
 
 }
 
@@ -59,16 +62,7 @@ void si7021_readTempData(){
   i2cSeq.flags = I2C_FLAG_READ; // Perform a read operations
   i2cSeq.buf[0].data = data; // Store result into data.
   i2cSeq.buf[0].len = sizeof(data); // Data is an array of size 2.
-  i2cStatus = I2CSPM_Transfer(I2C0, &i2cSeq); // Begin the transefer
-
-  if(i2cStatus != i2cTransferDone){
-      LOG_ERROR("Temp read from sensor failed with i2c error code : %d\r\n",i2cStatus); // Print error if transfer not successful.
-      return;
-  }
-  uint16_t rawTempVal = ((data[0]<<8)|(data[1]));
-  int temp = (int)((175.72 * rawTempVal)/65536 - 46.85);
-
-  LOG_INFO("Temperature Read Successful. Temp in C : %d\r\n",temp);
+  I2C_TransferInit(I2C0, &i2cSeq);
 }
 void si7021_sendTempCmd(){
   cmd = SI7021_TEMP_CMD;
@@ -76,27 +70,14 @@ void si7021_sendTempCmd(){
   i2cSeq.flags = I2C_FLAG_WRITE;
   i2cSeq.buf[0].data = &cmd;
   i2cSeq.buf[0].len = sizeof(cmd);
-  i2cStatus = I2CSPM_Transfer(I2C0, &i2cSeq);
-
-  if(i2cStatus != i2cTransferDone){
-      LOG_ERROR("Temp Command to sensor failed with i2c error code : %d\r\n",i2cStatus);
-      return;
-  }
+  I2C_TransferInit(I2C0, &i2cSeq);
 }
 
 void si7021_power(bool on){
   if(on){
       GPIO_PinOutSet(gpioPortD, 15);
-      timerWaitUs((80)*(1000U)); // Wait for the SI7021 to power on.
   }
   else{
       GPIO_PinOutClear(gpioPortD, 15); // Turn off power to SI7021
   }
-}
-void si7021_getData(){
-  si7021_power(true);
-  si7021_sendTempCmd();
-  timerWaitUs((11)*(1000U));
-  si7021_readTempData();
-  si7021_power(false);
 }

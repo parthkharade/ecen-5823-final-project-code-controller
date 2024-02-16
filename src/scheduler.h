@@ -27,18 +27,35 @@
 
 typedef enum{
   noEventPending = 0,
-  eventLETUnderFlow = 1
+  eventLETUnderFlow=1,
+  eventLETComp1=2,
+  eventI2CTRXSuccessful=4,
+  eventI2CTRXError=8
 }event_t;
 
-
+typedef enum{
+  stateIdle = 0,
+  stateTSensorOn,
+  stateSentWCmd,
+  stateWaitReadDelay,
+  stateWaitForRead,
+}state_t;
 /**
  * Set the LET Timer underflow event as a pending task.
  * */
 void schedulerSetEventLETUF();
 
+void schedulerSetEventLETComp1();
+
+void schedulerSetEventI2CTRXSuccess();
+
+void schedulerSetEventI2CTRXError();
+
 /**
  * Get the next highest pending priority event.
  * */
 uint32_t schedulerGetNextEvent();
+
+void temperature_state_machine(event_t event);
 
 #endif /* SRC_SCHEDULER_C_ */

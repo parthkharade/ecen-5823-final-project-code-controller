@@ -167,7 +167,9 @@ SL_WEAK void app_init(void)
   I2C0init();
 
   //Set the lowest energy mode according the the #define in app,c
-  sl_power_manager_add_em_requirement(LOWEST_ENERGY_MODE);
+  if(LOWEST_ENERGY_MODE > 0 && LOWEST_ENERGY_MODE <3){
+    sl_power_manager_add_em_requirement(LOWEST_ENERGY_MODE);
+  }
   // Enable timer interrupts at the NVIC
   NVIC_EnableIRQ(LETIMER0_IRQn);
 } // app_init()
@@ -190,17 +192,7 @@ SL_WEAK void app_process_action(void)
   nextEvent = schedulerGetNextEvent (); // Get the next event from the scheduler.
   while (nextEvent != noEventPending)
     {
-      switch (nextEvent)
-        {
-        case noEventPending:
-          break;
-        case eventLETUnderFlow:
-          si7021_getData (); // Read data on LETIMER underflow.
-          break;
-        default:
-          LOG_ERROR("Invalid Event Code from Scheduler %d", nextEvent);
-          break;
-        }
+      temperature_state_machine(nextEvent);
       nextEvent = schedulerGetNextEvent ();
     }
 #endif

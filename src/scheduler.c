@@ -19,9 +19,16 @@
 *   use of assignment grading. Use of code excerpts allowed at the
 *   discretion of author. Contact for permission.
  */
+#define INCLUDE_LOG_DEBUG 1
+
+#include "log.h"
 #include "scheduler.h"
 #include "em_core.h"
+#include "i2c.h"
+#include "sl_power_manager.h"
+#include "timer.h"
 uint32_t schedulerPedningEvents = 0;
+extern uint8_t data[2];
 void schedulerSetEventLETUF(){
 
   CORE_DECLARE_IRQ_STATE;
@@ -30,6 +37,26 @@ void schedulerSetEventLETUF(){
   schedulerPedningEvents|=eventLETUnderFlow;
   CORE_EXIT_CRITICAL();
 
+}
+
+void schedulerSetEventLETComp1(){
+  CORE_DECLARE_IRQ_STATE;
+  CORE_ENTER_CRITICAL();
+  schedulerPedningEvents|=eventLETComp1;
+  CORE_EXIT_CRITICAL();
+}
+
+void schedulerSetEventI2CTRXSuccess(){
+  CORE_DECLARE_IRQ_STATE;
+  CORE_ENTER_CRITICAL();
+  schedulerPedningEvents|=eventI2CTRXSuccessful;
+  CORE_EXIT_CRITICAL();
+}
+void schedulerSetEventI2CTRXError(){
+  CORE_DECLARE_IRQ_STATE;
+  CORE_ENTER_CRITICAL();
+  schedulerPedningEvents|=eventI2CTRXError;
+  CORE_EXIT_CRITICAL();
 }
 uint32_t schedulerGetNextEvent(){
   uint32_t event = 0;
@@ -46,10 +73,19 @@ uint32_t schedulerGetNextEvent(){
   currentPendingEvents = schedulerPedningEvents;
   CORE_EXIT_CRITICAL();
 
-  if(currentPendingEvents&eventLETUnderFlow) event=eventLETUnderFlow;
-
+  if(currentPendingEvents&eventLETUnderFlow){
+      event=eventLETUnderFlow;
+  }
+  else if(currentPendingEvents&eventLETComp1){
+      event=eventLETComp1;
+  }
+  else if(currentPendingEvents&eventI2CTRXSuccessful){
+      event=eventI2CTRXSuccessful;
+  }
+  else if(currentPendingEvents&eventI2CTRXError){
+      event=eventI2CTRXError;
+  }
   /**
-   * @brief Construct a new core enter critical object
    * This approach works well if the number of events are small. I can conditionally check for the event mask in the order of their priority and return once a pendinnd event is found.
    * For larger number of events a for loop to extract the bits of the pending event variable would be a better approach.
    * 
@@ -60,3 +96,58 @@ uint32_t schedulerGetNextEvent(){
   return event;
 }
 
+
+void temperature_state_machine(event_t event){
+  state_t current_state;
+  static state_t next_state = stateIdle;
+
+  current_state = next_state;
+  switch(current_state){
+    case stateIdle:
+      next_state = stateIdle;
+      if(event == eventLETUnderFlow){
+          si7021_power(true);
+          timerWaitUs_irq(SI7021_ON_DELAY_US);
+          next_state = stateTSensorOn;
+      }
+      break;
+    case stateTSensorOn:
+      next_state = stateIdle;
+      if(event == eventLETComp1){
+          sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM1);
+          si7021_sendTempCmd();
+          next_state = stateSentWCmd;
+      }
+      break;
+    case stateSentWCmd:
+      next_state = stateIdle;
+      if(event == eventI2CTRXSuccessful){
+          sl_power_manager_remove_em_requirement(SL_POWER_MANAGER_EM1);
+          timerWaitUs_irq(SI7021_READ_DELAY_US);
+          next_state = stateWaitReadDelay;
+      }
+      else{
+          /*LOG ERROR?*/
+      }
+      break;
+    case stateWaitReadDelay:
+      next_state = stateIdle;
+      if(event == eventLETComp1){
+          sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM1);
+          si7021_readTempData();
+          next_state = stateWaitForRead;
+      }
+      break;
+    case stateWaitForRead:
+      next_state = stateIdle;
+      if(event == eventI2CTRXSuccessful){
+          si7021_power(false);
+          sl_power_manager_remove_em_requirement(SL_POWER_MANAGER_EM1);
+          uint16_t rawTempVal = ((data[0]<<8)|(data[1]));
+          int temp = (int)((175.72 * rawTempVal)/65536 - 46.85);
+          LOG_INFO("Temperature Read Successful. Temp in C : %d\r\n",temp);
+      }
+
+      break;
+  }
+}

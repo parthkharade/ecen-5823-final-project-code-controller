@@ -35,7 +35,8 @@
 // Uncomment this line to enable the unit-test function for waitTimerUs
 //#define UNIT_TEST_TIMER
 void lettimer0Init();
-void timerWaitUs(uint32_t delay);
+void timerWaitUs_irq(uint32_t delay);
+void timerWaitUs_poll(uint32_t delay);
 
 #ifdef UNIT_TEST_TIMER
 void testTimerWaitUs();

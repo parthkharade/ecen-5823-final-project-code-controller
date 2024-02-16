@@ -40,7 +40,7 @@ static float tickValuS;
 void lettimer0Init(){
   const LETIMER_Init_TypeDef LETimer0Init = {
   .enable = false,
-  .debugRun = true,
+  .debugRun = false,
   .bufTop = false,
   .comp0Top = true,
   .out0Pol = 0,
@@ -69,7 +69,7 @@ void lettimer0Init(){
 
 }
 
-void timerWaitUs(uint32_t delay){
+void timerWaitUs_poll(uint32_t delay){
   if(delay > MAX_DELAY_US){
     LOG_ERROR("Delay of %lu uS more than maximum permissible delay of %lu uS\r\n",delay,MAX_DELAY_US); // This is the upper bound. The lower bound is handled below
   }
@@ -92,10 +92,34 @@ void timerWaitUs(uint32_t delay){
   }
 }
 
+void timerWaitUs_irq(uint32_t delay){
+  if(delay > MAX_DELAY_US){
+    LOG_ERROR("Delay of %lu uS more than maximum permissible delay of %lu uS\r\n",delay,MAX_DELAY_US); // This is the upper bound. The lower bound is handled below
+  }
+  else{
+
+      //Gets the current Count Value.
+      uint32_t currCntVal = LETIMER_CounterGet(LETIMER0);
+
+      // Calculate the number of ticks to wait for.
+      uint16_t delayTicks = (uint16_t)(delay/tickValuS);
+
+      // Wait atleast 1-tick if the calculated ticks is 0. Can happen when delay is less than tickValuS.
+      if(delayTicks == 0) delayTicks = 1;
+
+
+      // Check for wrap around condition.
+      // If the number of ticks to wait for is more than what the timer can provide. The cnt value will be currVal + comp0val - delayticks + 1 (accounting for the tick from 0->comp0val);
+      uint32_t waitVal = (currCntVal>delayTicks)?((currCntVal-delayTicks)):((comp0val - (delayTicks-currCntVal) + 1));
+      LETIMER_CompareSet(LETIMER0, 1, waitVal);
+      LETIMER_IntEnable(LETIMER0, (LETIMER_IEN_COMP1));
+  }
+}
+
+
 #ifdef UNIT_TEST_TIMER
 void testTimerWaitUs(){
   while(1){
-
       //Delay test of 10ms
       gpioLed0SetOn();
       timerWaitUs(10000);
@@ -125,8 +149,6 @@ void testTimerWaitUs(){
       timerWaitUs(4000000);
       gpioLed0SetOff();
       timerWaitUs(4000000);
-
-
   }
 }
 #endif
