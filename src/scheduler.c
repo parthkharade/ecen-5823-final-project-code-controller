@@ -73,17 +73,17 @@ uint32_t schedulerGetNextEvent(){
   currentPendingEvents = schedulerPedningEvents;
   CORE_EXIT_CRITICAL();
 
-  if(currentPendingEvents&eventLETUnderFlow){
-      event=eventLETUnderFlow;
-  }
-  else if(currentPendingEvents&eventLETComp1){
-      event=eventLETComp1;
-  }
-  else if(currentPendingEvents&eventI2CTRXSuccessful){
+  if(currentPendingEvents&eventI2CTRXSuccessful){
       event=eventI2CTRXSuccessful;
   }
   else if(currentPendingEvents&eventI2CTRXError){
       event=eventI2CTRXError;
+  }
+  else if(currentPendingEvents&eventLETComp1){
+      event=eventLETComp1;
+  }
+  else if(currentPendingEvents&eventLETUnderFlow){
+      event=eventLETUnderFlow;
   }
   /**
    * This approach works well if the number of events are small. I can conditionally check for the event mask in the order of their priority and return once a pendinnd event is found.

@@ -37,7 +37,7 @@
 void lettimer0Init();
 void timerWaitUs_irq(uint32_t delay);
 void timerWaitUs_poll(uint32_t delay);
-
+#define LETIMER_PERIOD_MS    (3000U)
 #ifdef UNIT_TEST_TIMER
 void testTimerWaitUs();
 #endif

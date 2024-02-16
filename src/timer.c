@@ -31,9 +31,9 @@
 #ifdef UNIT_TEST_TIMER
 #include "src/gpio.h"
 #endif
-#define LETIMER_PERIOD    (3000U)
+
 #define ONE_US (1000000LU)
-#define MAX_DELAY_US ((LETIMER_PERIOD)*(1000U))
+#define MAX_DELAY_US ((LETIMER_PERIOD_MS)*(1000U))
 
 static uint16_t comp0val; // making this global so that it can be accessed by waitimeruS
 static float tickValuS;
@@ -54,7 +54,7 @@ void lettimer0Init(){
   uint32_t leTimerFreq = CMU_ClockFreqGet(cmuClock_LETIMER0);
 
   //Calculate comp0val which will be reloaded in CNT and corresponds to the total period.
-  comp0val = (uint32_t) ((LETIMER_PERIOD * leTimerFreq)/1000);
+  comp0val = (uint32_t) ((LETIMER_PERIOD_MS * leTimerFreq)/1000);
 
   tickValuS =  (ONE_US)/(float)leTimerFreq; // Calculate the exact tick time and round off later during the actual delay function.
 
@@ -112,6 +112,8 @@ void timerWaitUs_irq(uint32_t delay){
       // If the number of ticks to wait for is more than what the timer can provide. The cnt value will be currVal + comp0val - delayticks + 1 (accounting for the tick from 0->comp0val);
       uint32_t waitVal = (currCntVal>delayTicks)?((currCntVal-delayTicks)):((comp0val - (delayTicks-currCntVal) + 1));
       LETIMER_CompareSet(LETIMER0, 1, waitVal);
+
+      LETIMER_IntClear(LETIMER0, LETIMER_IEN_COMP1);
       LETIMER_IntEnable(LETIMER0, (LETIMER_IEN_COMP1));
   }
 }
