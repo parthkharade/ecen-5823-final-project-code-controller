@@ -61,6 +61,14 @@ void gpioInit()
 #endif
 } // gpioInit()
 
+void si7021_power(bool on){
+  if(on){
+      GPIO_PinOutSet(gpioPortD, 15);
+  }
+  else{
+      GPIO_PinOutClear(gpioPortD, 15); // Turn off power to SI7021
+  }
+}
 
 #ifdef UNIT_TEST_TIMER
 void gpioLed0SetOn()

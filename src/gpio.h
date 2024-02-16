@@ -35,6 +35,11 @@
 // Function prototypes
 void gpioInit();
 
+/**
+ * Turn the power to SI7021 on or off
+ * */
+void si7021_power(bool on);
+
 #ifdef UNIT_TEST_TIMER
 void gpioLed0SetOn();
 void gpioLed0SetOff();

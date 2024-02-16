@@ -23,6 +23,7 @@
 
 #include "log.h"
 #include "scheduler.h"
+#include "gpio.h"
 #include "em_core.h"
 #include "i2c.h"
 #include "sl_power_manager.h"
@@ -100,7 +101,7 @@ void temperature_state_machine(event_t event){
 
   current_state = next_state;
   switch(current_state){
-    case stateIdle:
+    case stateIdle: // IDLE state. Wait for Timer Underflow to initiate transactions
       next_state = stateIdle;
       if(event == eventLETUnderFlow){
           si7021_power(true); 
@@ -108,7 +109,7 @@ void temperature_state_machine(event_t event){
           next_state = stateTSensorOn;
       }
       break;
-    case stateTSensorOn:
+    case stateTSensorOn: // Sensor is on. Send Write command after 80ms COMP1 interrupt
       next_state = stateIdle;
       if(event == eventLETComp1){
           sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM1);
@@ -116,7 +117,7 @@ void temperature_state_machine(event_t event){
           next_state = stateSentWCmd;
       }
       break;
-    case stateSentWCmd:
+    case stateSentWCmd: // Write Command transfer has been initiated. If successful wait for conversion time.
       next_state = stateIdle;
       if(event == eventI2CTRXSuccessful){
           sl_power_manager_remove_em_requirement(SL_POWER_MANAGER_EM1);
@@ -124,7 +125,7 @@ void temperature_state_machine(event_t event){
           next_state = stateWaitReadDelay;
       }
       break;
-    case stateWaitReadDelay:
+    case stateWaitReadDelay: // Wait for the conversion delay to expire. Then begin I2C transaction for reading data.
       next_state = stateIdle;
       if(event == eventLETComp1){
           sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM1);
@@ -132,7 +133,7 @@ void temperature_state_machine(event_t event){
           next_state = stateWaitForRead;
       }
       break;
-    case stateWaitForRead:
+    case stateWaitForRead: //wait for read transaction to complete. After that report the temperature if successful.
       next_state = stateIdle;
       if(event == eventI2CTRXSuccessful){
           si7021_power(false);

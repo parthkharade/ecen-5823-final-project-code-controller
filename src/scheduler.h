@@ -44,17 +44,26 @@ typedef enum{
  * */
 void schedulerSetEventLETUF();
 
+/**
+ * Set the Comp1 Timer match event as a pending task.
+ * */
 void schedulerSetEventLETComp1();
 
+/**
+ * Set the I2C transaction compelte event as a pending task.
+ * */
 void schedulerSetEventI2CTRXSuccess();
-
-void schedulerSetEventI2CTRXError();
 
 /**
  * Get the next highest pending priority event.
  * */
 uint32_t schedulerGetNextEvent();
 
+/**
+ * @brief Statemachine to handle the sequence of turning on temp sensor and reading temperature based on events.
+ * 
+ * @param event 
+ */
 void temperature_state_machine(event_t event);
 
 #endif /* SRC_SCHEDULER_C_ */
