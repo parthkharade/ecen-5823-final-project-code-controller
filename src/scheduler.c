@@ -52,12 +52,6 @@ void schedulerSetEventI2CTRXSuccess(){
   schedulerPedningEvents|=eventI2CTRXSuccessful;
   CORE_EXIT_CRITICAL();
 }
-void schedulerSetEventI2CTRXError(){
-  CORE_DECLARE_IRQ_STATE;
-  CORE_ENTER_CRITICAL();
-  schedulerPedningEvents|=eventI2CTRXError;
-  CORE_EXIT_CRITICAL();
-}
 uint32_t schedulerGetNextEvent(){
   uint32_t event = 0;
   uint32_t currentPendingEvents = 0;
@@ -76,9 +70,6 @@ uint32_t schedulerGetNextEvent(){
   if(currentPendingEvents&eventI2CTRXSuccessful){
       event=eventI2CTRXSuccessful;
   }
-  else if(currentPendingEvents&eventI2CTRXError){
-      event=eventI2CTRXError;
-  }
   else if(currentPendingEvents&eventLETComp1){
       event=eventLETComp1;
   }
@@ -96,7 +87,13 @@ uint32_t schedulerGetNextEvent(){
   return event;
 }
 
-
+/**
+ * @brief The state machine has 5 states and state transitions are triggered by events. If an event otehr than the one exepected is recieved then the Machine moves back to it's idle state.
+ * 
+ * IDLE ---> TURN ON SENSOR and WAIT  ---> SEND WRITE and wait for Succeess----> Wait for Conversion TIME DELAY ---> Initiate READ ---> Wait for success and print result.
+ * 
+ * @param 
+ */
 void temperature_state_machine(event_t event){
   state_t current_state;
   static state_t next_state = stateIdle;
@@ -106,7 +103,7 @@ void temperature_state_machine(event_t event){
     case stateIdle:
       next_state = stateIdle;
       if(event == eventLETUnderFlow){
-          si7021_power(true);
+          si7021_power(true); 
           timerWaitUs_irq(SI7021_ON_DELAY_US);
           next_state = stateTSensorOn;
       }
@@ -126,9 +123,6 @@ void temperature_state_machine(event_t event){
           timerWaitUs_irq(SI7021_READ_DELAY_US);
           next_state = stateWaitReadDelay;
       }
-      else{
-          /*LOG ERROR?*/
-      }
       break;
     case stateWaitReadDelay:
       next_state = stateIdle;
@@ -147,7 +141,6 @@ void temperature_state_machine(event_t event){
           int temp = (int)((175.72 * rawTempVal)/65536 - 46.85);
           LOG_INFO("Temperature Read Successful. Temp in C : %d\r\n",temp);
       }
-
       break;
   }
 }

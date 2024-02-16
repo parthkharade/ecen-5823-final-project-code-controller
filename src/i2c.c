@@ -62,7 +62,10 @@ void si7021_readTempData(){
   i2cSeq.flags = I2C_FLAG_READ; // Perform a read operations
   i2cSeq.buf[0].data = data; // Store result into data.
   i2cSeq.buf[0].len = sizeof(data); // Data is an array of size 2.
-  I2C_TransferInit(I2C0, &i2cSeq);
+  I2C_TransferReturn_TypeDef sc = I2C_TransferInit(I2C0, &i2cSeq);
+  if(sc<0){
+      LOG_ERROR("I2C Read Fail %d ",sc);
+  }
 }
 void si7021_sendTempCmd(){
   cmd = SI7021_TEMP_CMD;
@@ -70,7 +73,10 @@ void si7021_sendTempCmd(){
   i2cSeq.flags = I2C_FLAG_WRITE;
   i2cSeq.buf[0].data = &cmd;
   i2cSeq.buf[0].len = sizeof(cmd);
-  I2C_TransferInit(I2C0, &i2cSeq);
+  I2C_TransferReturn_TypeDef sc = I2C_TransferInit(I2C0, &i2cSeq);
+  if(sc<0){
+      LOG_ERROR("I2C Write Fail %d ",sc);
+  }
 }
 
 void si7021_power(bool on){

@@ -29,8 +29,7 @@ typedef enum{
   noEventPending = 0,
   eventLETUnderFlow=1,
   eventLETComp1=2,
-  eventI2CTRXSuccessful=4,
-  eventI2CTRXError=8
+  eventI2CTRXSuccessful=4
 }event_t;
 
 typedef enum{

@@ -15,6 +15,8 @@
 *   use of assignment grading. Use of code excerpts allowed at the
 *   discretion of author. Contact for permission.
  */
+#define INCLUDE_LOG_DEBUG 1
+#include "log.h"
 #include "irq.h"
 #include "em_letimer.h"
 #include "gpio.h"
@@ -46,7 +48,7 @@ void I2C0_IRQHandler(){
       schedulerSetEventI2CTRXSuccess();
   }
   else if(transferStatus != i2cTransferInProgress){
-      schedulerSetEventI2CTRXError();
+      LOG_ERROR("%d",transferStatus);
   }
 }
 
