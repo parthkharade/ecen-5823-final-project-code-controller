@@ -16,12 +16,12 @@ See [Mastering Markdown](https://guides.github.com/features/mastering-markdown/)
    ![Avg_current_LPM_Off](screenshots/assignment4/avg_current_lpm_off.jpg)  
 
 3. What is the ave current from the time we power-on the 7021 until we get the COMP1 IRQ indicating that the 7021's maximum time for conversion (measurement) has expired.
-   Answer: 527.2 uA.
+   Answer: 126.80 uA.
    <br>Screenshot: 
    ![Avg_current_LPM_Off](screenshots/assignment4/avg_current_lpm_on.jpg)  
 
 4. How long is the Si7021 Powered On for 1 temperature reading?
-   Answer: 104.2ms
+   Answer: 92.10ms
    <br>Screenshot:  
    ![duration_lpm_on](screenshots/assignment4/avg_current_lpm_on.jpg)  
 
