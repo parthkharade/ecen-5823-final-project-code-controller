@@ -57,5 +57,5 @@ uint32_t letimerMilliseconds(){
   CORE_ENTER_CRITICAL();
   uint32_t underflow_count = LETimer0_underflowCount;
   CORE_EXIT_CRITICAL();
-  return underflow_count*LETIMER_PERIOD_MS + (LETIMER_CompareGet(LETIMER0, 0) - LETIMER_CounterGet(LETIMER0));
+  return underflow_count*LETIMER_PERIOD_MS + ((LETIMER_CompareGet(LETIMER0, 0) - LETIMER_CounterGet(LETIMER0))*getTickValueus()/1000);
 }

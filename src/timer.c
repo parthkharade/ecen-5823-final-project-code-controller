@@ -118,6 +118,9 @@ void timerWaitUs_irq(uint32_t delay){
   }
 }
 
+float getTickValueus(){
+  return tickValuS;
+}
 
 #ifdef UNIT_TEST_TIMER
 void testTimerWaitUs(){

@@ -27,7 +27,7 @@
 
 #define SI7021_ON_DELAY_US    ((80)*(1000))
 
-#define SI7021_READ_DELAY_US  ((11)*(1000))
+#define SI7021_READ_DELAY_US  ((10800))
 #include "stdbool.h"
 void I2C0init();
 
