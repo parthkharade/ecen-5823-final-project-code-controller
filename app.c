@@ -63,6 +63,7 @@
 #include "src/oscillator.h"
 #include "src/scheduler.h"
 #include "src/i2c.h"
+#include "src/ble.h"
 // Students: Here is an example of how to correctly include logging functions in
 //           each .c file.
 //           Apply this technique to your other .c files.
@@ -185,17 +186,17 @@ SL_WEAK void app_process_action(void)
   // Notice: This function is not passed or has access to Bluetooth stack events.
   //         We will create/use a scheme that is far more energy efficient in
   //         later assignments.
-#ifdef UNIT_TEST_TIMER
-  testTimerWaitUs();
-#else
-  event_t nextEvent;
-  nextEvent = schedulerGetNextEvent (); // Get the next event from the scheduler.
-  while (nextEvent != noEventPending)
-    {
-      temperature_state_machine(nextEvent);
-      nextEvent = schedulerGetNextEvent ();
-    }
-#endif
+//#ifdef UNIT_TEST_TIMER
+//  testTimerWaitUs();
+//#else
+//  event_t nextEvent;
+//  nextEvent = schedulerGetNextEvent (); // Get the next event from the scheduler.
+//  while (nextEvent != noEventPending)
+//    {
+//      temperature_state_machine(nextEvent);
+//      nextEvent = schedulerGetNextEvent ();
+//    }
+//#endif
 } // app_process_action()
 
 
@@ -222,10 +223,10 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
   // Some events require responses from our application code,
   // and don’t necessarily advance our state machines.
   // For A5 uncomment the next 2 function calls
-  // handle_ble_event(evt); // put this code in ble.c/.h
+   handle_ble_event(evt); // put this code in ble.c/.h
 
   // sequence through states driven by events
-  // state_machine(evt);    // put this code in scheduler.c/.h
+   temperature_state_machine(evt);    // put this code in scheduler.c/.h
 
 
 } // sl_bt_on_event()

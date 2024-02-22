@@ -24,7 +24,7 @@
 #define SRC_SCHEDULER_C_
 
 #include "stdint.h"
-
+#include "ble.h"
 typedef enum{
   noEventPending = 0,
   eventLETUnderFlow=1,
@@ -54,16 +54,16 @@ void schedulerSetEventLETComp1();
  * */
 void schedulerSetEventI2CTRXSuccess();
 
-/**
- * Get the next highest pending priority event.
- * */
-uint32_t schedulerGetNextEvent();
+///**
+// * Get the next highest pending priority event.
+// * */
+//uint32_t schedulerGetNextEvent();
 
 /**
  * @brief Statemachine to handle the sequence of turning on temp sensor and reading temperature based on events.
  * 
  * @param event 
  */
-void temperature_state_machine(event_t event);
+void temperature_state_machine(sl_bt_msg_t *evt);
 
 #endif /* SRC_SCHEDULER_C_ */
