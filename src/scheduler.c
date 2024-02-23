@@ -94,6 +94,7 @@ void schedulerSetEventI2CTRXSuccess(){
  * @param 
  */
 void temperature_state_machine(sl_bt_msg_t *evt){
+  sl_status_t sc;
   state_t current_state;
   static state_t next_state = stateIdle;
   current_state = next_state;
@@ -107,8 +108,8 @@ void temperature_state_machine(sl_bt_msg_t *evt){
       next_state = stateIdle;
       if((event&eventLETUnderFlow) &&
           ble_data->connection_open &&
-          ble_data->ok_to_send_htm_indications){
-          si7021_power(true); 
+          ble_data->ok_to_send_htm_indications){ // Initiate a measurement only if indications are enabled and
+          si7021_power(true);                    // connection is open.
           timerWaitUs_irq(SI7021_ON_DELAY_US);
           next_state = stateTSensorOn;
       }
@@ -149,12 +150,17 @@ void temperature_state_machine(sl_bt_msg_t *evt){
           int32_t ieee_temp = INT32_TO_FLOAT(temp*1000,-3);
           uint8_t *p = (temp_buff+1);
           UINT32_TO_BITSTREAM(p,ieee_temp);
-          sl_bt_gatt_server_write_attribute_value(gattdb_temperature_measurement, 0, 5, temp_buff);
+          sc = sl_bt_gatt_server_write_attribute_value(gattdb_temperature_measurement, 0, 5, temp_buff);
+          if(sc != SL_STATUS_OK){
+              LOG_ERROR("sl_bt_gatt_server_write_attribute_value() returned != 0 status=0x%04x",(unsigned int)sc);
+          }
           if(ble_data->connection_open && ble_data->ok_to_send_htm_indications &&
               !(ble_data->indication_in_flight)){
-              sl_bt_gatt_server_send_indication(ble_data->connectionHandle, gattdb_temperature_measurement,5, temp_buff);
+              sc = sl_bt_gatt_server_send_indication(ble_data->connectionHandle, gattdb_temperature_measurement,5, temp_buff);
+              if(sc != SL_STATUS_OK){
+                  LOG_ERROR("sl_bt_gatt_server_send_indication() returned != 0 status=0x%04x",(unsigned int)sc);
+              }
           }
-          LOG_INFO("Temperature Read Successful. Temp in C : %d\r\n",temp);
       }
       break;
   }
