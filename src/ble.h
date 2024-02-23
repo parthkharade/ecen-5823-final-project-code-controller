@@ -1,8 +1,23 @@
 /*
  * ble.h
  *
- *  Created on: Feb 20, 2024
- *      Author: Parth
+ *  Created on: Feb 21, 2024
+ *      Author: Parth Kharade, Parth.Kharade@Colorado.edu
+ *
+ *  @institution University of Colorado Boulder (UCB)
+ *  @course ECEN 5823-001: IoT Embedded Firmware (Spring 2024)
+*   @instructor David Sluiter
+*
+*   @assignment ecen5823-assignment3-ParthKharade
+*   @due Feb 8, 2024
+*
+*   @resources Utilized Silicon Labs' EMLIB peripheral libraries to
+*   implement functionality.
+* -  sl_bt_api.h used for bluetooth stack api
+*
+*   @copyright All rights reserved. Distribution allowed only for the
+*   use of assignment grading. Use of code excerpts allowed at the
+*   discretion of author. Contact for permission.
  */
 
 #ifndef SRC_BLE_H_
