@@ -21,14 +21,14 @@ ble_data_struct_t ble_data;
 #define CONN_INT_MIN_MS     75
 #define CONN_INT_MAX_MS     75
 #define CONN_SLV_LAT        4
-#define CONN_SUPV_TIMOUT_MS (1 + (CONN_INT_MAX_MS)*(CONN_SLV_LAT))*((CONN_INT_MAX_MS)*2)
+#define CONN_SUPV_TIMOUT_MS ((1 + (CONN_SLV_LAT))*((CONN_INT_MAX_MS)*2))
 
 #define CONN_INT_SCALER     1.25F
 #define CONN_SUPV_TIMOUT_SCALER 10
 
 #define CONN_INT_MIN_VAL  ((CONN_INT_MIN_MS)/(CONN_INT_SCALER))
 #define CONN_INT_MAX_VAL  ((CONN_INT_MAX_MS)/(CONN_INT_SCALER))
-#define CONN_SUPV_TIMOUT_VAL  ((CONN_SUPV_TIMOUT_MS)/(CONN_SUPV_TIMOUT_SCALER))
+#define CONN_SUPV_TIMOUT_VAL  (((CONN_SUPV_TIMOUT_MS)/(CONN_SUPV_TIMOUT_SCALER))+1)
 
 ble_data_struct_t *get_ble_data(){
   return &ble_data;
@@ -67,7 +67,7 @@ void handle_ble_event(sl_bt_msg_t *evt){
       ble_data.connectionHandle = evt->data.evt_connection_opened.connection; // This handle will be used when sending indications. Save this here.
       ble_data.connection_open = true;
       // Connection parameters such as interval and duration and timeout value.
-      sc = sl_bt_connection_set_parameters(ble_data.connectionHandle, CONN_INT_MIN_VAL, CONN_INT_MAX_VAL, CONN_SLV_LAT, CONN_SUPV_TIMOUT_VAL, 0, 0);
+      sc = sl_bt_connection_set_parameters(ble_data.connectionHandle, CONN_INT_MIN_VAL, CONN_INT_MAX_VAL, CONN_SLV_LAT, CONN_SUPV_TIMOUT_VAL, 0, 0xffff);
       if(sc != SL_STATUS_OK){
           LOG_ERROR("sl_bt_connection_set_parameters() returned != 0 status=0x%04x",(unsigned int)sc);
       }
