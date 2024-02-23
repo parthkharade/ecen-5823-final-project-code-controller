@@ -39,6 +39,13 @@ bool indication_in_flight;
 // values unique for client
 
 } ble_data_struct_t;
+/*
+ * Event responder for systems BLE events
+ * */
 void handle_ble_event(sl_bt_msg_t *evt);
+
+/*
+ * getter function for ble conncetion meta data
+ * */
 ble_data_struct_t *get_ble_data();
 #endif /* SRC_BLE_H_ */
