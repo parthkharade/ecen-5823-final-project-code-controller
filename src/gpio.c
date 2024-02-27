@@ -70,6 +70,14 @@ void si7021_power(bool on){
   }
 }
 
+void gpioSetDisplayExtcomin(bool extPinState){
+    if(extPinState){
+        GPIO_PinOutSet(gpioPortD, 13);
+    }
+    else{
+        GPIO_PinOutSet(gpioPortD, 13);
+    }
+}
 #ifdef UNIT_TEST_TIMER
 void gpioLed0SetOn()
 {

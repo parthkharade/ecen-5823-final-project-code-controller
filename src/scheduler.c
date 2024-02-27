@@ -141,10 +141,11 @@ void temperature_state_machine(sl_bt_msg_t *evt){
     case stateWaitForRead: //wait for read transaction to complete. After that report the temperature if successful.
       next_state = stateIdle;
       if(event&eventI2CTRXSuccessful){
-          si7021_power(false);
+//          si7021_power(false);
           sl_power_manager_remove_em_requirement(SL_POWER_MANAGER_EM1);
           uint16_t rawTempVal = ((data[0]<<8)|(data[1]));
           int temp = (int)((175.72 * rawTempVal)/65536 - 46.85); // Convert temperature to signed int
+          displayPrintf(DISPLAY_ROW_TEMPVALUE, "Temp=%d",temp);
           uint8_t temp_buff[5]; // Array to be sent to client
           temp_buff[0] = 0; // Temperature is in C
           int32_t ieee_temp = INT32_TO_FLOAT(temp*1000,-3); // Convert to IEEE11073

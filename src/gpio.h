@@ -31,7 +31,7 @@
 
 
 #include "timer.h" // To find the definition for UNIT_TEST_TIMER
-
+#include "lcd.h"
 // Function prototypes
 void gpioInit();
 
@@ -39,7 +39,7 @@ void gpioInit();
  * Turn the power to SI7021 on or off
  * */
 void si7021_power(bool on);
-
+void gpioSetDisplayExtcomin(bool extPinState);
 #ifdef UNIT_TEST_TIMER
 void gpioLed0SetOn();
 void gpioLed0SetOff();

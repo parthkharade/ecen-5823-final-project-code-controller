@@ -20,6 +20,6 @@
 #ifndef SRC_IRQ_H_
 #define SRC_IRQ_H_
 
-
+uint32_t letimerMilliseconds();
 
 #endif /* SRC_IRQ_H_ */
