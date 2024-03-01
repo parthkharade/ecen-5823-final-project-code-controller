@@ -151,9 +151,9 @@ void handle_ble_event(sl_bt_msg_t *evt){
       break;
     case sl_bt_evt_gatt_server_indication_timeout_id:
       ble_data.indication_in_flight = false;
-      LOG_ERROR("GATT indication timed out");
+      LOG_ERROR("GATT indication timed out\r\n");
       break;
     case sl_bt_evt_system_soft_timer_id:
-      displayUpdate();
+      displayUpdate(); // Timer expires every one second. Call the display update function at this point.
   }
 }

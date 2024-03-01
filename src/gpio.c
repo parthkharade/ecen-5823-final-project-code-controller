@@ -69,7 +69,9 @@ void si7021_power(bool on){
       GPIO_PinOutClear(gpioPortD, 15); // Turn off power to SI7021
   }
 }
-
+/*
+ * Function to toggle the common input pin on the LCD display.
+ * */
 void gpioSetDisplayExtcomin(bool extPinState){
     if(extPinState){
         GPIO_PinOutSet(gpioPortD, 13);
