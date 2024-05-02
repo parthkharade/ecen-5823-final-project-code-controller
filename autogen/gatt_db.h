@@ -22,7 +22,8 @@ extern const sli_bt_gattdb_t gattdb;
 #define gattdb_valid_range                    30
 #define gattdb_joystick_state                 33
 #define gattdb_characteristic_descriptor      35
-#define gattdb_ota_control                    38
+#define gattdb_game_score                     38
+#define gattdb_ota_control                    42
 
 
 #endif // __GATT_DB_H

@@ -51,8 +51,6 @@ void schedulerSetEventADCComplete(){
   CORE_EXIT_CRITICAL();
 }
 void joystickReadStateMachine(sl_bt_msg_t *evt){
-
-  static joystate_t curr_state = stateIdle;
   ble_data_struct_t *ble_data = get_ble_data();
   uint8_t joystick_state = 0;
   if (SL_BT_MSG_ID(evt->header) != sl_bt_evt_system_external_signal_id)
@@ -60,14 +58,6 @@ void joystickReadStateMachine(sl_bt_msg_t *evt){
       return;
     }
   event_t event = evt->data.evt_system_external_signal.extsignals;
-//  switch(curr_state){
-//    case stateIdle:
-//      if(event&eventLETUnderFlow){
-//          curr_state = stateStartedRead;
-//          ADC_Start(ADC0, adcStartSingle);
-//      }
-//      break;
-//    case stateStartedRead:
   uint8_t sc = 0;
       if(event&eventADCComplete){
           uint8_t adc0_val = ADC_DataSingleGet(ADC0);
@@ -90,16 +80,11 @@ void joystickReadStateMachine(sl_bt_msg_t *evt){
                         gattdb_joystick_state,                            //characteristic
                         sizeof(joystick_state),                            //size of value
                         &joystick_state);                              //value to indicate
-                    displayPrintf (DISPLAY_ROW_10, "Dir=%d", joystick_state); //show temperature on display
+                    displayPrintf (DISPLAY_ROW_JOYSTICK, "Dir=%d", joystick_state); //show Joystick Direction on display
                     if (sc != SL_STATUS_OK)
                       {
                         LOG_ERROR("sl_bt_gatt_server_send_indication() returned != 0 status=0x%04x\r", (unsigned int) sc);
                       }
                   }
-          curr_state = stateIdle;
       }
-//      break;
-//    default:
-//      break;
-//  }
 }

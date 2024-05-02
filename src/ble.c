@@ -63,9 +63,9 @@ void handle_ble_event(sl_bt_msg_t *evt){
       if(sc != SL_STATUS_OK){
           LOG_ERROR("sl_bt_system_get_identity_address() returned != 0 status=0x%04x",(unsigned int)sc);
       }
-      displayPrintf(DISPLAY_ROW_TEMPVALUE, "");
+//      displayPrintf(DISPLAY_ROW_TEMPVALUE, "");
       displayPrintf(DISPLAY_ROW_NAME,"%s",name);
-      displayPrintf(DISPLAY_ROW_ASSIGNMENT,"%s",assignment);
+//      displayPrintf(DISPLAY_ROW_ASSIGNMENT,"%s",assignment);
       displayPrintf(DISPLAY_ROW_BTADDR,"%02x:%02x:%02x:%02x:%02x:%02x",
                     ble_data.myAddress.addr[5],
                     ble_data.myAddress.addr[4],
@@ -89,6 +89,9 @@ void handle_ble_event(sl_bt_msg_t *evt){
       else{
           displayPrintf(DISPLAY_ROW_CONNECTION, "Advertising");
       }
+
+      sc = sl_bt_gatt_server_find_attribute(0, GAME_SCORE_UUID_LEN, gamescore_char, &ble_data.scoreAttributeHandle);
+      sc = sl_bt_gatt_server_find_attribute(0, GAME_STATE_UUID_LEN, gamestate_char, &ble_data.stateAttributeHandle);
       break;
     case sl_bt_evt_connection_opened_id:
       sc = sl_bt_advertiser_stop(ble_data.advertisingSetHandle); // Stop advertising as a connection has been successfully established
@@ -114,7 +117,7 @@ void handle_ble_event(sl_bt_msg_t *evt){
       }
       else{
           displayPrintf(DISPLAY_ROW_CONNECTION, "Advertising");
-          displayPrintf(DISPLAY_ROW_TEMPVALUE, "");
+//          displayPrintf(DISPLAY_ROW_TEMPVALUE, "");
       }
       break;
     case sl_bt_evt_connection_parameters_id:
@@ -140,7 +143,7 @@ void handle_ble_event(sl_bt_msg_t *evt){
               else
                 {
                   ble_data.ok_to_send_htm_indications = false;
-                  displayPrintf(DISPLAY_ROW_TEMPVALUE, "");
+//                  displayPrintf(DISPLAY_ROW_TEMPVALUE, "");
                 }
             }
         }
@@ -156,6 +159,26 @@ void handle_ble_event(sl_bt_msg_t *evt){
       break;
     case sl_bt_evt_system_soft_timer_id:
       displayUpdate(); // Timer expires every one second. Call the display update function at this point.
+      break;
+    case sl_bt_evt_gatt_server_attribute_value_id:
+      if(evt->data.evt_gatt_server_attribute_value.attribute == ble_data.scoreAttributeHandle){
+          uint8_t gameScore = (uint8_t)evt->data.evt_gatt_server_attribute_value.value.data[0];
+          displayPrintf(DISPLAY_ROW_SCORE, "Score=%d", gameScore);
+      }
+      if(evt->data.evt_gatt_server_attribute_value.attribute == ble_data.stateAttributeHandle){
+          uint8_t gameState = (uint8_t)evt->data.evt_gatt_server_attribute_value.value.data[0];
+          char gameStateText[12];
+          switch(gameState){
+            case 0:
+              memcpy(gameStateText,"Game Over",sizeof("Game Over"));
+              break;
+            case 1:
+              memcpy(gameStateText,"Game Running",sizeof("Game Running"));
+              break;
+          }
+          displayPrintf(DISPLAY_ROW_GAMESTATE, "%s", gameStateText);
+      }
+      break;
   }
 }
 

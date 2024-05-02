@@ -39,6 +39,6 @@ void readJoystick(){
   ADC_Start(ADC0, adcStartSingle);
   while(! (ADC0->STATUS & ADC_STATUS_SINGLEDV));
   adc0_val = ADC_DataSingleGet(ADC0);
-  displayPrintf(DISPLAY_ROW_10, "VER is : %u ",adc0_val);
+  displayPrintf(DISPLAY_ROW_JOYSTICK, "VER is : %u ",adc0_val);
 
 }
