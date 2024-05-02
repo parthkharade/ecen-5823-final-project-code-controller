@@ -180,5 +180,21 @@ When used with the Measurement Interval characteristic, the Valid Range descript
         <value length="0" type="hex" variable_length="false">00</value>
       </descriptor>
     </characteristic>
+
+    <!--Game State Characteristic-->
+    <characteristic const="false" id="game_state" name="Game State Characteristic" sourceId="" uuid="00000000-0000-0000-0000-00000000000B">
+      <value length="1" type="hex" variable_length="false">00</value>
+      <properties>
+        <write_no_response authenticated="false" bonded="false" encrypted="false"/>
+      </properties>
+
+      <!--Game State Characteristic Descriptor-->
+      <descriptor const="false" discoverable="true" name="Game State Characteristic Descriptor" sourceId="" uuid="00000000-0000-0000-0000-00000000000C">
+        <properties>
+          <write authenticated="false" bonded="false" encrypted="false"/>
+        </properties>
+        <value length="0" type="hex" variable_length="false">00</value>
+      </descriptor>
+    </characteristic>
   </service>
 </gatt>
