@@ -62,8 +62,9 @@
 #include "src/timer.h"
 #include "src/oscillator.h"
 #include "src/scheduler.h"
-#include "src/i2c.h"
 #include "src/ble.h"
+#include "em_adc.h"
+#include "src/adc.h"
 // Students: Here is an example of how to correctly include logging functions in
 //           each .c file.
 //           Apply this technique to your other .c files.
@@ -164,15 +165,15 @@ SL_WEAK void app_init(void)
 
   gpioInit();
   oscInit();
+  adcInit();
   lettimer0Init();
-  I2C0init();
-
   //Set the lowest energy mode according the the #define in app,c
   if(LOWEST_ENERGY_MODE > 0 && LOWEST_ENERGY_MODE <3){
     sl_power_manager_add_em_requirement(LOWEST_ENERGY_MODE);
   }
   // Enable timer interrupts at the NVIC
   NVIC_EnableIRQ(LETIMER0_IRQn);
+  NVIC_EnableIRQ(ADC0_IRQn);
 } // app_init()
 
 
@@ -181,22 +182,6 @@ SL_WEAK void app_init(void)
  *****************************************************************************/
 SL_WEAK void app_process_action(void)
 {
-  // Put your application code here for A1 to A4.
-  // This is called repeatedly from the main while(1) loop
-  // Notice: This function is not passed or has access to Bluetooth stack events.
-  //         We will create/use a scheme that is far more energy efficient in
-  //         later assignments.
-//#ifdef UNIT_TEST_TIMER
-//  testTimerWaitUs();
-//#else
-//  event_t nextEvent;
-//  nextEvent = schedulerGetNextEvent (); // Get the next event from the scheduler.
-//  while (nextEvent != noEventPending)
-//    {
-//      temperature_state_machine(nextEvent);
-//      nextEvent = schedulerGetNextEvent ();
-//    }
-//#endif
 } // app_process_action()
 
 
@@ -224,9 +209,8 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
   // and don’t necessarily advance our state machines.
   // For A5 uncomment the next 2 function calls
    handle_ble_event(evt); // put this code in ble.c/.h
-
+   joystickReadStateMachine(evt);
   // sequence through states driven by events
-   temperature_state_machine(evt);    // put this code in scheduler.c/.h
 
 
 } // sl_bt_on_event()

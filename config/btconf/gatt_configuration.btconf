@@ -138,4 +138,27 @@ When used with the Measurement Interval characteristic, the Valid Range descript
       </descriptor>
     </characteristic>
   </service>
+
+  <!--Joystick Posittion-->
+  <service advertise="true" name="Joystick Posittion" requirement="mandatory" sourceId="" type="primary" uuid="00000000-0000-0000-0000-000000000005">
+
+    <!--Joystick State-->
+    <characteristic const="false" id="joystick_state" name="Joystick State" sourceId="" uuid="00000000-0000-0000-0000-000000000006">
+      <value length="1" type="hex" variable_length="false">00</value>
+      <properties>
+        <read authenticated="false" bonded="false" encrypted="false"/>
+        <indicate authenticated="false" bonded="false" encrypted="false"/>
+        <notify authenticated="false" bonded="false" encrypted="false"/>
+      </properties>
+
+      <!--Joystick Characteristic Descriptor-->
+      <descriptor const="false" discoverable="true" id="characteristic_descriptor" name="Joystick Characteristic Descriptor" sourceId="" uuid="00000000-0000-0000-0000-000000000007">
+        <properties>
+          <read authenticated="false" bonded="false" encrypted="false"/>
+          <write authenticated="false" bonded="false" encrypted="false"/>
+        </properties>
+        <value length="1" type="hex" variable_length="false">00</value>
+      </descriptor>
+    </characteristic>
+  </service>
 </gatt>

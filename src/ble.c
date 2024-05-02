@@ -25,6 +25,7 @@
 #include "ble.h"
 #include "lcd.h"
 #include "gatt_db.h"
+#include "ble_device_type.h"
 ble_data_struct_t ble_data;
 
 #define ADV_INT_MIN_MS  250U
@@ -81,7 +82,6 @@ void handle_ble_event(sl_bt_msg_t *evt){
       if(sc != SL_STATUS_OK){
           LOG_ERROR("sl_bt_advertiser_set_timing() returned != 0 status=0x%04x",(unsigned int)sc);
       }
-
       sc = sl_bt_advertiser_start(ble_data.advertisingSetHandle, sl_bt_advertiser_general_discoverable, sl_bt_advertiser_connectable_scannable);
       if(sc != SL_STATUS_OK){
           LOG_ERROR("sl_bt_advertiser_start() returned != 0 status=0x%04x",(unsigned int)sc);
@@ -106,6 +106,7 @@ void handle_ble_event(sl_bt_msg_t *evt){
       break;
     case sl_bt_evt_connection_closed_id:
       ble_data.connection_open = false;
+      ble_data.ok_to_send_htm_indications = false;
       // The conenction was closed, start advertising for a new connection.
       sc = sl_bt_advertiser_start(ble_data.advertisingSetHandle, sl_bt_advertiser_general_discoverable, sl_bt_advertiser_connectable_scannable);
       if(sc != SL_STATUS_OK){
@@ -129,10 +130,10 @@ void handle_ble_event(sl_bt_msg_t *evt){
           == sl_bt_gatt_server_client_config)
         {
           if (evt->data.evt_gatt_server_characteristic_status.characteristic
-              == gattdb_temperature_measurement)
+              == gattdb_joystick_state)
             {
               if (evt->data.evt_gatt_server_characteristic_status.client_config_flags
-                  == sl_bt_gatt_indication)
+                  == sl_bt_gatt_notification)
                 {
                   ble_data.ok_to_send_htm_indications = true;
                 }
@@ -157,3 +158,5 @@ void handle_ble_event(sl_bt_msg_t *evt){
       displayUpdate(); // Timer expires every one second. Call the display update function at this point.
   }
 }
+
+

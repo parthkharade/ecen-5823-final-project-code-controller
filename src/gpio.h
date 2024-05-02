@@ -32,6 +32,7 @@
 
 #include "timer.h" // To find the definition for UNIT_TEST_TIMER
 #include "lcd.h"
+#include "stdbool.h"
 // Function prototypes
 void gpioInit();
 

@@ -20,7 +20,9 @@ extern const sli_bt_gattdb_t gattdb;
 #define gattdb_intermediate_temperature       26
 #define gattdb_measurement_interval           29
 #define gattdb_valid_range                    30
-#define gattdb_ota_control                    33
+#define gattdb_joystick_state                 33
+#define gattdb_characteristic_descriptor      35
+#define gattdb_ota_control                    38
 
 
 #endif // __GATT_DB_H

@@ -42,7 +42,7 @@ void timerWaitUs_poll(uint32_t delay);
  * Getter function for Tick Value
  * */
 float getTickValueus();
-#define LETIMER_PERIOD_MS    (3000U)
+#define LETIMER_PERIOD_MS    (100U)
 #ifdef UNIT_TEST_TIMER
 void testTimerWaitUs();
 #endif

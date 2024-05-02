@@ -23,6 +23,7 @@
 #include "em_core.h"
 #include "scheduler.h"
 #include "em_i2c.h"
+#include "em_adc.h"
 uint16_t LETimer0_underflowCount = 0;
 void LETIMER0_IRQHandler(){
   uint32_t irqStatusFlag = LETIMER_IntGet(LETIMER0);
@@ -33,6 +34,7 @@ void LETIMER0_IRQHandler(){
 
   if(irqStatusFlag&LETIMER_IF_UF){
       schedulerSetEventLETUF();
+      ADC_Start(ADC0, adcStartSingle);
       LETimer0_underflowCount++;
   }
   if(irqStatusFlag&LETIMER_IF_COMP1){
@@ -41,15 +43,13 @@ void LETIMER0_IRQHandler(){
   }
 
 }
-void I2C0_IRQHandler(){
-  I2C_TransferReturn_TypeDef transferStatus;
-  transferStatus = I2C_Transfer(I2C0);
-  if(transferStatus == i2cTransferDone){
-      schedulerSetEventI2CTRXSuccess();
-  }
-  else if(transferStatus != i2cTransferInProgress){
-      LOG_ERROR("%d",transferStatus);
-  }
+void ADC0_IRQHandler(void){
+  uint32_t irqStatusFlag = ADC_IntGet(ADC0);
+  //Clear Pending Interrupts.
+  ADC_IntClear(ADC0, irqStatusFlag);
+  uint8_t adc0_val = ADC_DataSingleGet(ADC0);
+  NVIC_ClearPendingIRQ(ADC0_IRQn);
+  schedulerSetEventADCComplete();
 }
 
 uint32_t letimerMilliseconds(){

@@ -29,16 +29,13 @@ typedef enum{
   noEventPending = 0,
   eventLETUnderFlow=1,
   eventLETComp1=2,
-  eventI2CTRXSuccessful=4
+  eventADCComplete=3
 }event_t;
 
 typedef enum{
   stateIdle = 0,
-  stateTSensorOn,
-  stateSentWCmd,
-  stateWaitReadDelay,
-  stateWaitForRead,
-}state_t;
+  stateStartedRead,
+}joystate_t;
 /**
  * Set the LET Timer underflow event as a pending task.
  * */
@@ -53,6 +50,7 @@ void schedulerSetEventLETComp1();
  * Set the I2C transaction compelte event as a pending task.
  * */
 void schedulerSetEventI2CTRXSuccess();
+void schedulerSetEventADCComplete();
 
 ///**
 // * Get the next highest pending priority event.
@@ -65,5 +63,7 @@ void schedulerSetEventI2CTRXSuccess();
  * @param event 
  */
 void temperature_state_machine(sl_bt_msg_t *evt);
+
+void joystickReadStateMachine(sl_bt_msg_t *evt);
 
 #endif /* SRC_SCHEDULER_C_ */

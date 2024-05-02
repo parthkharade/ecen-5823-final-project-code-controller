@@ -30,7 +30,10 @@ void oscInit(){
   CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_ULFRCO);
 #else
   CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
+  CMU->ADCCTRL |= CMU_ADCCTRL_ADC0CLKSEL_AUXHFRCO;
+//  CMU_ClockSelectSet(cmuClock_AUX, cmuSelect_AUXHFRCO);
   CMU_ClockDivSet(cmuClock_LETIMER0 , cmuClkDiv_4);
 #endif
   CMU_ClockEnable(cmuClock_LETIMER0, true);
+  CMU_ClockEnable(cmuClock_ADC0, true);
 }

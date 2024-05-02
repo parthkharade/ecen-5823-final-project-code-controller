@@ -53,12 +53,10 @@ void gpioInit()
     // Student Edit:
    // Set sensor enable pin as a push pull output and low at start.
     GPIO_PinModeSet(gpioPortD, 15, gpioModePushPull, 0);
-
-#ifdef UNIT_TEST_TIMER
-    GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthWeakAlternateWeak); // Weak, 1mA
-    // Set the 2 GPIOs mode of operation
-    GPIO_PinModeSet(LED_port, LED0_pin, gpioModePushPull, false);
-#endif
+    GPIO_PinModeSet(gpioPortD, 12, gpioModeDisabled, 0); //set PC6 to DISABLE with no pull resistors
+    GPIO->P[gpioPortD].OVTDIS |= (0x01 << 12); //Disable over-voltage tolerance for PC6
+    GPIO_PinModeSet(gpioPortD, 10, gpioModeDisabled, 0); //set PC6 to DISABLE with no pull resistors
+    GPIO->P[gpioPortD].OVTDIS |= (0x01 << 10); //Disable over-voltage tolerance for PC6
 } // gpioInit()
 
 void si7021_power(bool on){

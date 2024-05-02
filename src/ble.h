@@ -33,6 +33,7 @@
 #include "sl_bgapi.h"
 #include "sl_bt_api.h"
 
+
 // BLE Data Structure, save all of our private BT data in here.
 // Modern C (circa 2021 does it this way)
 // typedef ble_data_struct_t is referred to as an anonymous struct definition
@@ -40,9 +41,10 @@ typedef struct {
 // values that are common to servers and clients
 bd_addr myAddress;
 uint8_t myAddressType;
-// values unique for server
 
+// values unique for server
 uint8_t connectionHandle;
+
 
 // The advertising set handle allocated from Bluetooth stack.
 uint8_t advertisingSetHandle;
@@ -57,6 +59,7 @@ bool indication_in_flight;
 /*
  * Event responder for systems BLE events
  * */
+
 void handle_ble_event(sl_bt_msg_t *evt);
 
 /*
